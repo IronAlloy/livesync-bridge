@@ -4,6 +4,7 @@
 #   docker build -f docker/wise/Dockerfile -t livesync-bridge:wise .
 # The image contains EXACTLY the commit that is checked out (no `git clone`, no patch
 # files): upstream + the PRs/fixes merged on the `wise` branch. See docker/wise/README.md.
+# Published by CI (.github/workflows/wise-image.yml) on every push to the `wise` branch.
 #
 # Reproducibility: the Deno base image is pinned by CONTENT DIGEST (a tag can be
 # re-pushed, a digest cannot) and dependencies by deno.lock (`--frozen`).
