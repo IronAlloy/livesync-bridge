@@ -18,6 +18,7 @@ import { minimatch } from "minimatch";
 import { promiseWithResolver } from "octagonal-wheels/promises";
 import { LOG_LEVEL_NOTICE } from "octagonal-wheels/common/logger";
 import { withRetry } from "./util.ts";
+import { installChunkFetcher } from "./ChunkFetch.ts";
 
 type ManipulatorMetaEntry = Parameters<DirectFileManipulator["getByMeta"]>[0];
 type ManipulatorReadyEntry = Awaited<ReturnType<DirectFileManipulator["getByMeta"]>>;
@@ -55,6 +56,10 @@ export class PeerCouchDB extends Peer {
             // that into a normal feed error, which the watch's own 10s reconnect handles.
             fetch: (request, init) => this._fetchWithIdleTimeout(request, init),
         });
+        // The library needs an "active replicator" to fetch chunks it does not hold;
+        // the bridge has none, so documents whose chunks arrive after the document
+        // itself failed to load (see ChunkFetch.ts).
+        installChunkFetcher(this.man, (m) => this.normalLog(m));
         // Resume from the persisted checkpoint. If there is none, leave "now" as a
         // marker; _connectAndWatch resolves it to the current update_seq (and persists
         // it) before the watch starts, so later restarts never skip missed changes.
