@@ -17,6 +17,7 @@ import {
 import { minimatch } from "minimatch";
 import { promiseWithResolver } from "octagonal-wheels/promises";
 import { LOG_LEVEL_NOTICE } from "octagonal-wheels/common/logger";
+import { installChunkFetcher } from "./ChunkFetch.ts";
 
 type ManipulatorMetaEntry = Parameters<DirectFileManipulator["getByMeta"]>[0];
 type ManipulatorReadyEntry = Awaited<ReturnType<DirectFileManipulator["getByMeta"]>>;
@@ -50,6 +51,10 @@ export class PeerCouchDB extends Peer {
             // Bypass node:http compatibility shims for Deno, Traefik, and long-polling connections.
             fetch: (request, init) => globalThis.fetch(request, init),
         });
+        // The library needs an "active replicator" to fetch chunks it does not hold;
+        // the bridge has none, so documents whose chunks arrive after the document
+        // itself failed to load (see ChunkFetch.ts).
+        installChunkFetcher(this.man, (m) => this.normalLog(m));
         // Fetch remote since.
         this.man.since = this.getSetting("since") || "now";
         if (prev) void prev.close().catch(() => {});
