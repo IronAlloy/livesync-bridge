@@ -1,0 +1,22 @@
+{
+  "peers": [
+    {
+      "type": "couchdb",
+      "name": "obsidian-vault",
+      "url": "http://couchdb:5984",
+      "username": "",
+      "password": "",
+      "database": "obsidian-vault",
+      "passphrase": "",
+      "obfuscatePassphrase": "",
+      "baseDir": "",
+      "useRemoteTweaks": true
+    },
+    {
+      "type": "storage",
+      "name": "local-vault",
+      "baseDir": "data/vault/",
+      "scanOfflineChanges": true
+    }
+  ]
+}
